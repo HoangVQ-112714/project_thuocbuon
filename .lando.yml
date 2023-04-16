@@ -1,0 +1,35 @@
+name: p_thuocbuon
+recipe: drupal8
+config:
+  webroot: .
+  php: '8.1'
+  composer_version: '2.4.1'
+services:
+  myservice:
+    type: mysql
+    portforward: true
+    creds:
+      user: p_thuocbuon
+      password: p_thuocbuon
+      database: p_thuocbuon
+    xdebug: true
+    config:
+      php: .lando/php.ini
+    overrides:
+      environment:
+        PHP_SENDMAIL_PATH: '/usr/sbin/sendmail -S mailhogwget :1025'
+        PHP_IDE_CONFIG: "serverName=p_thuocbuon"
+        DRUSH_OPTIONS_URI: "http://p_thuocbuon.lndo.site"
+        DRUSH_OPTIONS_ROOT: '/app'
+    build:
+      - "/app/vendor/bin/phpcs --config-set installed_paths /app/vendor/drupal/coder/coder_sniffer"
+
+tooling:
+  drupalcs:
+    service: appserver
+    cmd: "/app/vendor/bin/phpcs --standard=Drupal,DrupalPractice --extensions=php,module,install,theme"
+    description: Run phpcs Drupal Coding Standards against a given file or directory.
+  drupalcbf:
+    service: appserver
+    cmd: "/app/vendor/bin/phpcbf --standard=Drupal,DrupalPractice --extensions=php,module,install,theme"
+    description: Automatically fix Drupal coding standards suggestions.
